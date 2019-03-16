@@ -47,6 +47,9 @@ func (s *server) MultSSLSet(ctx context.Context, in *pt.MultSSLSetRequest) (*pt.
 	for _, item := range in.GetItem() {
 		p := path.Join(nginxSslPath, item.GetDirectory())
 		os.MkdirAll(p, 0777)
+		if item.GetCertName() == "" || item.GetKeyName() == "" {
+			return nil, grpc.Errorf(1002, "cert key must not be empty")
+		}
 		pathCert := path.Join(p, strings.Replace(item.GetCertName(), "..", "", -1)+".crt")
 		pathKey := path.Join(p, strings.Replace(item.GetKeyName(), "..", "", -1)+".key")
 		log.Println("pathCert", pathCert)
