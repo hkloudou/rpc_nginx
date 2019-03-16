@@ -31,3 +31,5 @@ down:
 	docker-compose down -v --remove-orphans
 t:
 	curl -H "Host: whoami.local" localhost
+protoc:
+	protoc -I proto/ proto/nginx.proto --go_out=plugins=grpc:proto
