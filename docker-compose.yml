@@ -6,5 +6,7 @@ services:
     network_mode: "bridge"
     restart: always
     volumes:
-      - $PWD/tmp/nginx/conf.d/:/etc/nginx/conf.d
+      - $PWD/tmp/ssl/:/etc/nginx/certs/
       - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - VIRTUAL_HOST=localhost

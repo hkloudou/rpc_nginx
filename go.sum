@@ -49,6 +49,8 @@ github.com/sirupsen/logrus v1.3.0 h1:hI/7Q+DtNZ2kINb6qt/lS+IyXnHQe9e90POfeewL/ME
 github.com/sirupsen/logrus v1.3.0/go.mod h1:LxeOpSwHxABJmUn/MG1IvRgCAasNZTLOkJPxbbu5VWo=
 github.com/stretchr/objx v0.1.1/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.2.2/go.mod h1:a8OnRcib4nhh0OaRAV+Yts87kKdq0PP7pXfy6kDkUVs=
+github.com/webfont-io/webfont v1.0.16 h1:eE/jMBg6Wb6u3eMt/87LBBn6GjZayCS4e5LxNc3fc9M=
+github.com/webfont-io/webfont v1.0.16/go.mod h1:8bqkn+eLXxRhQ51u6IwRV7vpVnThLKfVnqWR2nlmGaU=
 gitlab.me/font/gaccesskey v1.0.8 h1:nCuDZFSW94lk4IzEX1r3muziPitKiAMusIN7dv6iXkM=
 gitlab.me/font/gaccesskey v1.0.8/go.mod h1:GJRJL5AnudRSmCzLGm7sSB2iKIVYv1wHvADB2bBOfec=
 gitlab.me/font/gorder v1.0.1 h1:8FBVvgWUzp557EeSeEgbjIfNqdAz2kZtv4lUsfO0OA0=
