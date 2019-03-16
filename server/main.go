@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"path"
+	"strings"
 
 	pt "github.com/hkloudou/rpc_nginx/proto"
 	"google.golang.org/grpc"
@@ -19,21 +20,28 @@ var _commitId_ = ""
 var _buildTime_ = ""
 var _appName_ = ""
 var nginxSslPath = "/etc/nginx/certs/"
+var apikey = "grpcnginx"
 
 // server is used to implement helloworld.GreeterServer.
 type server struct{}
 
 //获得AccessKey
 func (s *server) MultSSLSet(ctx context.Context, in *pt.MultSSLSetRequest) (*pt.SSLSetReply, error) {
+	if in.GetApikey() != apikey {
+		return nil, grpc.Errorf(1001, "apikey not equal")
+	}
 	for _, item := range in.GetItem() {
 		p := path.Join(nginxSslPath, item.GetDirectory())
 		os.MkdirAll(p, 0777)
-		pathCert := path.Join(p, item.GetCertName())
-		pathKey := path.Join(p, item.GetKeyName())
+		pathCert := path.Join(p, strings.Replace(item.GetCertName(), "..", "", -1))
+		pathKey := path.Join(p, strings.Replace(item.GetKeyName(), "..", "", -1))
+		if !strings.HasPrefix(nginxSslPath, pathCert) || !strings.HasPrefix(nginxSslPath, pathKey) {
+			return nil, grpc.Errorf(1001, "path can not include ../")
+		}
 		ioutil.WriteFile(pathCert, item.GetCert(), 0655)
 		ioutil.WriteFile(pathKey, item.GetKey(), 0655)
 	}
-	return nil, nil
+	return &pt.SSLSetReply{Ok: true}, nil
 }
 
 func init() {
@@ -41,9 +49,14 @@ func init() {
 		port = os.Getenv("GRPC_PORT")
 	}
 
+	if os.Getenv("APIKEY") != "" {
+		apikey = os.Getenv("APIKEY")
+	}
+
 	if os.Getenv("NGINX_SSL_PATH") != "" {
 		nginxSslPath = os.Getenv("NGINX_SSL_PATH")
 	}
+
 	log.Println("["+_appName_+"]", "init ...")
 	log.Println("["+_appName_+"]", "version", _version_)
 	log.Println("["+_appName_+"]", "branch", _branch_)

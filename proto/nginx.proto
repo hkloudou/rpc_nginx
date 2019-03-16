@@ -14,7 +14,8 @@ service Greeter {
 }
 
 message MultSSLSetRequest {
-  repeated SSLSetRequest item =1;
+  string apikey =1;
+  repeated SSLSetRequest item =2;
 }
 
 message SSLSetRequest {
