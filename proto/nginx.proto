@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "io.grpc.nginx.proto";
+option java_outer_classname = "NginxProto";
+
+package proto;
+
+
+// The greeting service definition.
+service Greeter {
+  //多个SSL证书设置
+  rpc MultSSLSet(MultSSLSetRequest) returns (SSLSetReply) {}
+}
+
+message MultSSLSetRequest {
+  repeated SSLSetRequest item =1;
+}
+
+message SSLSetRequest {
+  string directory =1;   //cert保存的子目录
+  string cert_name=2;   //证书名称
+  string key_name=3;   //密码名称
+  bytes cert = 4;       //证书内容
+  bytes key = 5;        //密码内容
+}
+
+message SSLSetReply {
+  bool ok = 1;
+}
