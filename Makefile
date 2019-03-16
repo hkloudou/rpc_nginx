@@ -18,9 +18,8 @@ build:
 	@make git
 	mkdir -p docker/bin/ && GOOS=linux GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -a -o docker/bin/rpc-nginx ./server/
 	docker build -t $(IMAGEWITHOUTTAG) .
-tag:
-	@docker tag $(IMAGEWITHOUTTAG) $(IMAGE)
 deploy:
+	@docker tag $(IMAGEWITHOUTTAG) $(IMAGE)
 	@docker push $(IMAGEWITHOUTTAG)
 	@docker push $(IMAGE)
 up:
