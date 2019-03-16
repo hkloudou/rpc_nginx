@@ -21,6 +21,7 @@ var _buildTime_ = ""
 var _appName_ = ""
 var nginxSslPath = "/etc/nginx/certs/"
 var apikey = "grpcnginx"
+var signContainer = "nginx-proxy"
 
 // server is used to implement helloworld.GreeterServer.
 type server struct{}
@@ -41,6 +42,12 @@ func (s *server) MultSSLSet(ctx context.Context, in *pt.MultSSLSetRequest) (*pt.
 		ioutil.WriteFile(pathCert, item.GetCert(), 0655)
 		ioutil.WriteFile(pathKey, item.GetKey(), 0655)
 	}
+
+	/*
+		1.保存文件
+		2.通知nginx
+	*/
+
 	return &pt.SSLSetReply{Ok: true}, nil
 }
 
@@ -51,6 +58,10 @@ func init() {
 
 	if os.Getenv("APIKEY") != "" {
 		apikey = os.Getenv("APIKEY")
+	}
+
+	if os.Getenv("SIGN_CONTAINER") != "" {
+		signContainer = os.Getenv("SIGN_CONTAINER")
 	}
 
 	if os.Getenv("NGINX_SSL_PATH") != "" {
