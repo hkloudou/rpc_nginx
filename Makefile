@@ -41,7 +41,8 @@ u:
 down:
 	docker-compose down -v --remove-orphans
 t:
-	nginx-ssl-push -cert "${HOME}/.acme.sh/apiatm.com/fullchain.cer" -key "${HOME}/.acme.sh/apiatm.com/apiatm.com.key" -name "apiatm.com" -url "www.loc:80"
+	nginx-ssl-push -cert "${HOME}/.acme.sh/apiatm.com/fullchain.cer" -key "${HOME}/.acme.sh/apiatm.com/apiatm.com.key" -name "apiatm.com" -url "localhost:80"
+	nginx-ssl-push -cert "${HOME}/.acme.sh/youziku.com/fullchain.cer" -key "${HOME}/.acme.sh/youziku.com/youziku.com.key" -name "youziku.com" -url "localhost:80"
 protoc:
 	protoc -I proto/ proto/nginx.proto --go_out=plugins=grpc:proto
 install:
