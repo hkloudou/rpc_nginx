@@ -2,7 +2,7 @@ version: '2'
 services:
   rpc-nginx:
     container_name: rpc-nginx
-    image: hkloudou/rpc-nginx:v1.0.4
+    image: hkloudou/rpc-nginx:latest
     network_mode: "bridge"
     restart: always
     volumes:

@@ -4,7 +4,7 @@ COPY /bin/rpc-nginx /bin/rpc-nginx
 #		ca-certificates
 #RUN apk del .build-deps
 
-ENV GRPC_PORT 5000
+ENV GRPC_PORT :5000
 ENV VIRTUAL_PROTO grpc
 EXPOSE 5000
 CMD ["rpc-nginx"]
