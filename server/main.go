@@ -9,6 +9,7 @@ import (
 	"path"
 	"strings"
 
+	docker "github.com/fsouza/go-dockerclient"
 	pt "github.com/hkloudou/rpc_nginx/proto"
 	"google.golang.org/grpc"
 )
@@ -22,6 +23,7 @@ var _appName_ = ""
 var nginxSslPath = "/etc/nginx/certs/"
 var apikey = "grpcnginx"
 var signContainer = "nginx-proxy"
+var endpoint = "unix:///var/run/docker.sock"
 
 // server is used to implement helloworld.GreeterServer.
 type server struct{}
@@ -37,17 +39,25 @@ func (s *server) MultSSLSet(ctx context.Context, in *pt.MultSSLSetRequest) (*pt.
 		pathCert := path.Join(p, strings.Replace(item.GetCertName(), "..", "", -1))
 		pathKey := path.Join(p, strings.Replace(item.GetKeyName(), "..", "", -1))
 		if !strings.HasPrefix(nginxSslPath, pathCert) || !strings.HasPrefix(nginxSslPath, pathKey) {
-			return nil, grpc.Errorf(1001, "path can not include ../")
+			return nil, grpc.Errorf(1002, "path can not include ../")
 		}
 		ioutil.WriteFile(pathCert, item.GetCert(), 0655)
 		ioutil.WriteFile(pathKey, item.GetKey(), 0655)
 	}
 
+	killOpts := docker.KillContainerOptions{
+		ID:     signContainer,
+		Signal: docker.SIGHUP,
+	}
+	if client, err := NewDockerClient(endpoint); err != nil {
+		return nil, grpc.Errorf(1003, "NewDockerClient error:%s", err)
+	} else if err := client.KillContainer(killOpts); err != nil {
+		return nil, grpc.Errorf(1004, "Error sending signal to container: %s", err)
+	}
 	/*
 		1.保存文件
 		2.通知nginx
 	*/
-
 	return &pt.SSLSetReply{Ok: true}, nil
 }
 
@@ -66,6 +76,10 @@ func init() {
 
 	if os.Getenv("NGINX_SSL_PATH") != "" {
 		nginxSslPath = os.Getenv("NGINX_SSL_PATH")
+	}
+
+	if os.Getenv("ENDPOINT") != "" {
+		endpoint = os.Getenv("ENDPOINT")
 	}
 
 	log.Println("["+_appName_+"]", "init ...")
