@@ -8,5 +8,7 @@ services:
     volumes:
       - $PWD/tmp/ssl/:/etc/nginx/certs/
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - $PWD/tmp/log/:/var/log/nginx/:rw
     environment:
-      - VIRTUAL_HOST=localhost
+      - VIRTUAL_HOST=www.loc
+      - LOG_ACCESS_PATH=rpc-nginx.log

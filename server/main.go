@@ -38,6 +38,8 @@ func (s *server) MultSSLSet(ctx context.Context, in *pt.MultSSLSetRequest) (*pt.
 		os.MkdirAll(p, 0777)
 		pathCert := path.Join(p, strings.Replace(item.GetCertName(), "..", "", -1))
 		pathKey := path.Join(p, strings.Replace(item.GetKeyName(), "..", "", -1))
+		log.Println("pathCert", pathCert)
+		log.Println("pathKey", pathKey)
 		if !strings.HasPrefix(nginxSslPath, pathCert) || !strings.HasPrefix(nginxSslPath, pathKey) {
 			return nil, grpc.Errorf(1002, "path can not include ../")
 		}

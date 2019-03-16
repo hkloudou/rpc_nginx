@@ -39,6 +39,8 @@ u:
 down:
 	docker-compose down -v --remove-orphans
 t:
-	curl -H "Host: whoami.local" localhost
+	nginx-ssl-push -cert "${HOME}/.acme.sh/apiatm.com/fullchain.cer" -key "${HOME}/.acme.sh/apiatm.com/apiatm.com.key" -name "apiatm.com" -url "www.loc:80"
 protoc:
 	protoc -I proto/ proto/nginx.proto --go_out=plugins=grpc:proto
+install:
+	cd cmd/nginx-ssl-push && go install
