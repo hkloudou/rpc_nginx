@@ -36,15 +36,19 @@ func (s *server) MultSSLSet(ctx context.Context, in *pt.MultSSLSetRequest) (*pt.
 	for _, item := range in.GetItem() {
 		p := path.Join(nginxSslPath, item.GetDirectory())
 		os.MkdirAll(p, 0777)
-		pathCert := path.Join(p, strings.Replace(item.GetCertName(), "..", "", -1), ".crt")
-		pathKey := path.Join(p, strings.Replace(item.GetKeyName(), "..", "", -1), ".key")
+		pathCert := path.Join(p, strings.Replace(item.GetCertName(), "..", "", -1)+".crt")
+		pathKey := path.Join(p, strings.Replace(item.GetKeyName(), "..", "", -1)+".key")
 		log.Println("pathCert", pathCert)
 		log.Println("pathKey", pathKey)
 		if !strings.HasPrefix(pathCert, nginxSslPath) || !strings.HasPrefix(pathKey, nginxSslPath) {
 			return nil, grpc.Errorf(1002, "path can not include ../")
 		}
-		ioutil.WriteFile(pathCert, item.GetCert(), 0655)
-		ioutil.WriteFile(pathKey, item.GetKey(), 0655)
+		if err := ioutil.WriteFile(pathCert, item.GetCert(), 0655); err != nil {
+			return nil, grpc.Errorf(1003, "error write cert:%s", err)
+		}
+		if err := ioutil.WriteFile(pathKey, item.GetKey(), 0655); err != nil {
+			return nil, grpc.Errorf(1004, "error write key:%s", err)
+		}
 	}
 
 	killOpts := docker.KillContainerOptions{
@@ -52,9 +56,9 @@ func (s *server) MultSSLSet(ctx context.Context, in *pt.MultSSLSetRequest) (*pt.
 		Signal: docker.SIGHUP,
 	}
 	if client, err := NewDockerClient(endpoint); err != nil {
-		return nil, grpc.Errorf(1003, "NewDockerClient error:%s", err)
+		return nil, grpc.Errorf(1005, "NewDockerClient error:%s", err)
 	} else if err := client.KillContainer(killOpts); err != nil {
-		return nil, grpc.Errorf(1004, "Error sending signal to container: %s", err)
+		return nil, grpc.Errorf(1006, "Error sending signal to container: %s", err)
 	}
 	/*
 		1.保存文件
