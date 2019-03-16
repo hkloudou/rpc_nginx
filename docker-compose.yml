@@ -1,0 +1,10 @@
+version: '2'
+services:
+  rpc-nginx:
+    container_name: rpc-nginx
+    image: hkloudou/rpc-nginx
+    network_mode: "bridge"
+    restart: always
+    volumes:
+      - $PWD/tmp/nginx/conf.d/:/etc/nginx/conf.d
+      - /var/run/docker.sock:/var/run/docker.sock:ro

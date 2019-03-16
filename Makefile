@@ -3,6 +3,7 @@ IMAGE_PREFIX=hkloudou
 COMPONENT=rpc-nginx
 IMAGE = $(IMAGE_PREFIX)/$(COMPONENT):$(CLOSE_TAG)
 IMAGEWITHOUTTAG = $(IMAGE_PREFIX)/$(COMPONENT):latest
+LDFLAGS = -X main._version_=$(CLOSE_TAG) -X main._branch_=$(GIT_BRANCH) -X main._commitId_=$(GIT_LAST_COMMIT) -X main._buildTime_=$(COMPILE_TIME) -X main._appName_=$(COMPONENT) -s -w
 default: init
 
 init:
@@ -12,9 +13,10 @@ init:
 	@git config --local commit.gpgsign true
 	@git config --local autotag.sign true
 git:
-	git autotag -commit 'nginx alpine 1.15.9' -tag=true -push=true
+	git autotag -commit 'rpc nginx with grpc' -tag=true -push=true
 build:
 	@make git
+	mkdir -p docker/bin/ && GOOS=linux GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -a -o docker/bin/rpc-nginx ./server/
 	docker build -t $(IMAGEWITHOUTTAG) .
 tag:
 	@docker tag $(IMAGEWITHOUTTAG) $(IMAGE)
