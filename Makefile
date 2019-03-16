@@ -1,4 +1,12 @@
 CLOSE_TAG = $(shell git describe --abbrev=0)
+
+GIT_LAST_HASH = $(shell git rev-list --tags --max-count=1)
+GIT_SHA = $(shell git rev-parse --short HEAD)
+GIT_LAST_TAG = $(shell git describe --tags ${GIT_LAST_HASH})
+GIT_BRANCH = $(shell git rev-parse --abbrev-ref HEAD)
+GIT_LAST_COMMIT = $(shell git log --pretty=format:"%h" -1)
+COMPILE_TIME = $(shell date +%s)
+
 IMAGE_PREFIX=hkloudou
 COMPONENT=rpc-nginx
 IMAGE = $(IMAGE_PREFIX)/$(COMPONENT):$(CLOSE_TAG)
