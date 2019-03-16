@@ -36,11 +36,11 @@ func (s *server) MultSSLSet(ctx context.Context, in *pt.MultSSLSetRequest) (*pt.
 	for _, item := range in.GetItem() {
 		p := path.Join(nginxSslPath, item.GetDirectory())
 		os.MkdirAll(p, 0777)
-		pathCert := path.Join(p, strings.Replace(item.GetCertName(), "..", "", -1))
-		pathKey := path.Join(p, strings.Replace(item.GetKeyName(), "..", "", -1))
+		pathCert := path.Join(p, strings.Replace(item.GetCertName(), "..", "", -1), ".crt")
+		pathKey := path.Join(p, strings.Replace(item.GetKeyName(), "..", "", -1), ".key")
 		log.Println("pathCert", pathCert)
 		log.Println("pathKey", pathKey)
-		if !strings.HasPrefix(nginxSslPath, pathCert) || !strings.HasPrefix(nginxSslPath, pathKey) {
+		if !strings.HasPrefix(pathCert, nginxSslPath) || !strings.HasPrefix(pathKey, nginxSslPath) {
 			return nil, grpc.Errorf(1002, "path can not include ../")
 		}
 		ioutil.WriteFile(pathCert, item.GetCert(), 0655)
