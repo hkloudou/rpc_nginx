@@ -28,6 +28,17 @@ var endpoint = "unix:///var/run/docker.sock"
 // server is used to implement helloworld.GreeterServer.
 type server struct{}
 
+var puberr error
+var c *docker.Client
+
+func init() {
+	if client, err := NewDockerClient(endpoint); err != nil {
+		puberr = grpc.Errorf(1005, "NewDockerClient error:%s", err)
+	} else {
+		c = client
+	}
+}
+
 //获得AccessKey
 func (s *server) MultSSLSet(ctx context.Context, in *pt.MultSSLSetRequest) (*pt.SSLSetReply, error) {
 	if in.GetApikey() != apikey {
@@ -55,11 +66,12 @@ func (s *server) MultSSLSet(ctx context.Context, in *pt.MultSSLSetRequest) (*pt.
 		ID:     signContainer,
 		Signal: docker.SIGHUP,
 	}
-	if client, err := NewDockerClient(endpoint); err != nil {
-		return nil, grpc.Errorf(1005, "NewDockerClient error:%s", err)
-	} else if err := client.KillContainer(killOpts); err != nil {
+	if puberr != nil {
+		return nil, puberr
+	} else if err := c.KillContainer(killOpts); err != nil {
 		return nil, grpc.Errorf(1006, "Error sending signal to container: %s", err)
 	}
+	log.Println("ok")
 	/*
 		1.保存文件
 		2.通知nginx

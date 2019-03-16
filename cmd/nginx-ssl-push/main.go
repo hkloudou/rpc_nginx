@@ -9,6 +9,7 @@ import (
 
 	pt "github.com/hkloudou/rpc_nginx/proto"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/status"
 )
 
 var (
@@ -60,7 +61,12 @@ func main() {
 	}
 
 	if _, err := c.MultSSLSet(ctx, items); err != nil {
-		log.Fatal(err)
+		//
+		if actual, ok := status.FromError(err); ok {
+			log.Println("actual", "code", actual.Code(), "err:", actual.Message())
+		} else {
+			log.Fatal("not actual", err)
+		}
 	}
 	log.Println("ok")
 }

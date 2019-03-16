@@ -24,6 +24,8 @@ git:
 	git autotag -commit 'rpc nginx with grpc' -tag=true -push=true
 build:
 	@make git
+	@make build-bin
+build-bin:
 	mkdir -p docker/bin/ && GOOS=linux GOARCH=amd64 go build -ldflags "$(LDFLAGS)" -a -o docker/bin/rpc-nginx ./server/
 	cd docker && docker build -t $(IMAGEWITHOUTTAG) .
 deploy:
