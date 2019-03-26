@@ -11,9 +11,9 @@ IMAGE_PREFIX=hkloudou
 COMPONENT=rpc-nginx
 WEBPROTO=nginx
 
-IMAGE = $(IMAGE_PREFIX)/$(COMPONENT):$(CLOSE_TAG)
+IMAGE = $(IMAGE_PREFIX)/$(COMPONENT):$(VERSION)
 IMAGEWITHOUTTAG = $(IMAGE_PREFIX)/$(COMPONENT):latest
-LDFLAGS = -X main._version_=$(CLOSE_TAG) -X main._branch_=$(GIT_BRANCH) -X main._commitId_=$(GIT_LAST_COMMIT) -X main._buildTime_=$(COMPILE_TIME) -X main._appName_=$(COMPONENT) -s -w
+LDFLAGS = -X main._version_=$(VERSION) -X main._branch_=$(GIT_BRANCH) -X main._commitId_=$(GIT_LAST_COMMIT) -X main._buildTime_=$(COMPILE_TIME) -X main._appName_=$(COMPONENT) -s -w
 default: init
 init:
 	@git config --local user.name hkloudou
