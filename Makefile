@@ -48,6 +48,7 @@ fixversion:
 	echo "var GRPCServerURL = \"$(VERSIONNILDOT)-${COMPONENT}.grpc.apiatm.com\"" >>"$(WEBPROTO)/version.go"
 	git autotag -commit 'auto commit' -t -f -p
 deploy-docker:
+	@echo "deploy-docker $(IMAGEWITHOUTTAG => $(IMAGE)"
 	@docker tag $(IMAGEWITHOUTTAG) $(IMAGE)
 	@docker push $(IMAGEWITHOUTTAG)
 	@docker push $(IMAGE)
