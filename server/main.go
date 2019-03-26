@@ -52,7 +52,7 @@ func (s *server) MultSSLSet(ctx context.Context, in *nginx.MultSSLSetRequest) (*
 		}
 		pathCert := path.Join(p, strings.Replace(item.GetCertName(), "..", "", -1)+".crt")
 		pathKey := path.Join(p, strings.Replace(item.GetKeyName(), "..", "", -1)+".key")
-		pathcaCrt := path.Join(p, strings.Replace(item.GetKeyName(), "..", "", -1)+"_ca.key")
+		pathcaCrt := path.Join(p, strings.Replace(item.GetKeyName(), "..", "", -1)+"_ca.crt")
 		log.Println("pathCert", pathCert)
 		log.Println("pathKey", pathKey)
 		log.Println("pathcaCrt", pathcaCrt)
