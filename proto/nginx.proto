@@ -24,6 +24,7 @@ message SSLSetRequest {
   string key_name=3;   //密码名称
   bytes cert = 4;       //证书内容
   bytes key = 5;        //密码内容
+  bytes ca=6;           //ca证书，用于强制客户端登录
 }
 
 message SSLSetReply {
