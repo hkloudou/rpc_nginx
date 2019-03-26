@@ -52,10 +52,10 @@ func (s *server) MultSSLSet(ctx context.Context, in *nginx.MultSSLSetRequest) (*
 		}
 		pathCert := path.Join(p, strings.Replace(item.GetCertName(), "..", "", -1)+".crt")
 		pathKey := path.Join(p, strings.Replace(item.GetKeyName(), "..", "", -1)+".key")
-		pathcaKey := path.Join(p, strings.Replace(item.GetKeyName(), "..", "", -1)+"_ca.key")
+		pathcaCrt := path.Join(p, strings.Replace(item.GetKeyName(), "..", "", -1)+"_ca.key")
 		log.Println("pathCert", pathCert)
 		log.Println("pathKey", pathKey)
-		log.Println("pathcaKey", pathcaKey)
+		log.Println("pathcaCrt", pathcaCrt)
 		if !strings.HasPrefix(pathCert, nginxSslPath) || !strings.HasPrefix(pathKey, nginxSslPath) || !strings.HasPrefix(pathcaKey, nginxSslPath) {
 			return nil, grpc.Errorf(1002, "path can not include ../")
 		}
@@ -67,7 +67,7 @@ func (s *server) MultSSLSet(ctx context.Context, in *nginx.MultSSLSetRequest) (*
 		}
 
 		if len(item.GetCa()) > 0 {
-			if err := ioutil.WriteFile(pathKey, item.GetCa(), 0655); err != nil {
+			if err := ioutil.WriteFile(pathcaCrt, item.GetCa(), 0655); err != nil {
 				return nil, grpc.Errorf(1005, "error write ca:%s", err)
 			}
 		}
