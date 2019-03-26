@@ -56,7 +56,7 @@ func (s *server) MultSSLSet(ctx context.Context, in *nginx.MultSSLSetRequest) (*
 		log.Println("pathCert", pathCert)
 		log.Println("pathKey", pathKey)
 		log.Println("pathcaCrt", pathcaCrt)
-		if !strings.HasPrefix(pathCert, nginxSslPath) || !strings.HasPrefix(pathKey, nginxSslPath) || !strings.HasPrefix(pathcaKey, nginxSslPath) {
+		if !strings.HasPrefix(pathCert, nginxSslPath) || !strings.HasPrefix(pathKey, nginxSslPath) || !strings.HasPrefix(pathcaCrt, nginxSslPath) {
 			return nil, grpc.Errorf(1002, "path can not include ../")
 		}
 		if err := ioutil.WriteFile(pathCert, item.GetCert(), 0655); err != nil {
