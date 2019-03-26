@@ -4,7 +4,7 @@ option java_multiple_files = true;
 option java_package = "io.grpc.nginx.proto";
 option java_outer_classname = "NginxProto";
 
-package proto;
+package nginx;
 
 
 // The greeting service definition.
