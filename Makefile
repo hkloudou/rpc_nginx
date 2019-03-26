@@ -39,6 +39,7 @@ deploy:
 	@make deploy-docker
 	@make fixversion
 fixversion:
+	@echo "fixversion"
 	echo "package $(WEBPROTO)">"$(WEBPROTO)/version.go"
 	echo "" >> "$(WEBPROTO)/version.go"
 	echo "//Version git tag version" >> "$(WEBPROTO)/version.go"
