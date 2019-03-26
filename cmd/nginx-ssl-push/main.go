@@ -46,8 +46,9 @@ func main() {
 	items := &nginx.MultSSLSetRequest{}
 	items.Apikey = apiKey
 	items.Item = make([]*nginx.SSLSetRequest, 0)
-	log.Println("read:", certPath)
-	log.Println("read:", keyPath)
+	log.Println("apikey:", items.Apikey)
+	log.Println("ct read:", certPath)
+	log.Println("ky read:", keyPath)
 	if cert, err := ioutil.ReadFile(certPath); err != nil {
 		log.Fatal(err)
 	} else if key, err := ioutil.ReadFile(keyPath); err != nil {
@@ -56,6 +57,7 @@ func main() {
 		var ca []byte
 		var err error
 		if len(caPath) > 0 {
+			log.Println("ca read:", caPath)
 			if ca, err = ioutil.ReadFile(caPath); err != nil {
 				log.Fatal(err)
 			}
