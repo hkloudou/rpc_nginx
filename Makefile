@@ -30,7 +30,7 @@ build-bin: dist-clean
 build-debug-docker:
 	cd docker && docker build --rm --build-arg VERSION=debug --build-arg COMPONENT=$(COMPONENT) -t $(IMAGEWITHOUTTAG) .
 build-docker:
-	cd docker && docker build --rm --build-arg VERSION=$(VERSIONNILDOT) --build-arg COMPONENT=$(COMPONENT) -t $(IMAGEWITHOUTTAG) .
+	cd docker && docker build --rm --build-arg VERSION=$(VERSION) --build-arg COMPONENT=$(COMPONENT) -t $(IMAGEWITHOUTTAG) .
 deploy:
 	-git autotag -commit 'auto commit' -t -i
 	@make build-bin
@@ -45,7 +45,7 @@ fixversion:
 	echo "//Version git tag version" >> "$(WEBPROTO)/version.go"
 	echo "var Version = \"$(VERSION)\"" >>"$(WEBPROTO)/version.go"
 	echo "var VersionNilDot = \"$(VERSIONNILDOT)\"" >>"$(WEBPROTO)/version.go"
-	echo "var GRPCServerURL = \"$(VERSIONNILDOT)-${COMPONENT}.grpc.apiatm.com\"" >>"$(WEBPROTO)/version.go"
+	echo "var GRPCServerURL = \"${COMPONENT}-$(VERSIONNILDOT).grpc.apiatm.com\"" >>"$(WEBPROTO)/version.go"
 	git autotag -commit 'auto commit' -t -f -p
 deploy-docker:
 	@echo "deploy-docker $(IMAGEWITHOUTTAG) => $(IMAGE)"
