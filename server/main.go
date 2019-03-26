@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	docker "github.com/fsouza/go-dockerclient"
-	pt "github.com/hkloudou/rpc_nginx/proto"
+	nginx "github.com/hkloudou/rpc_nginx/nginx"
 	"google.golang.org/grpc"
 )
 
@@ -40,7 +40,7 @@ func init() {
 }
 
 //获得AccessKey
-func (s *server) MultSSLSet(ctx context.Context, in *pt.MultSSLSetRequest) (*pt.SSLSetReply, error) {
+func (s *server) MultSSLSet(ctx context.Context, in *nginx.MultSSLSetRequest) (*nginx.SSLSetReply, error) {
 	if in.GetApikey() != apikey {
 		return nil, grpc.Errorf(1001, "apikey not equal")
 	}
@@ -52,9 +52,11 @@ func (s *server) MultSSLSet(ctx context.Context, in *pt.MultSSLSetRequest) (*pt.
 		}
 		pathCert := path.Join(p, strings.Replace(item.GetCertName(), "..", "", -1)+".crt")
 		pathKey := path.Join(p, strings.Replace(item.GetKeyName(), "..", "", -1)+".key")
+		pathcaKey := path.Join(p, strings.Replace(item.GetKeyName(), "..", "", -1)+"_ca.key")
 		log.Println("pathCert", pathCert)
 		log.Println("pathKey", pathKey)
-		if !strings.HasPrefix(pathCert, nginxSslPath) || !strings.HasPrefix(pathKey, nginxSslPath) {
+		log.Println("pathcaKey", pathcaKey)
+		if !strings.HasPrefix(pathCert, nginxSslPath) || !strings.HasPrefix(pathKey, nginxSslPath) || !strings.HasPrefix(pathcaKey, nginxSslPath) {
 			return nil, grpc.Errorf(1002, "path can not include ../")
 		}
 		if err := ioutil.WriteFile(pathCert, item.GetCert(), 0655); err != nil {
@@ -62,6 +64,12 @@ func (s *server) MultSSLSet(ctx context.Context, in *pt.MultSSLSetRequest) (*pt.
 		}
 		if err := ioutil.WriteFile(pathKey, item.GetKey(), 0655); err != nil {
 			return nil, grpc.Errorf(1004, "error write key:%s", err)
+		}
+
+		if len(item.GetCa()) > 0 {
+			if err := ioutil.WriteFile(pathKey, item.GetCa(), 0655); err != nil {
+				return nil, grpc.Errorf(1005, "error write ca:%s", err)
+			}
 		}
 	}
 
@@ -79,7 +87,7 @@ func (s *server) MultSSLSet(ctx context.Context, in *pt.MultSSLSetRequest) (*pt.
 		1.保存文件
 		2.通知nginx
 	*/
-	return &pt.SSLSetReply{Ok: true}, nil
+	return &nginx.SSLSetReply{Ok: true}, nil
 }
 
 func init() {
@@ -116,7 +124,7 @@ func main() {
 		log.Fatalf("[%s] failed to listen: %v", _appName_, err)
 	}
 	s := grpc.NewServer()
-	pt.RegisterGreeterServer(s, &server{})
+	nginx.RegisterGreeterServer(s, &server{})
 	log.Println("["+_appName_+"]", "grpc listen:", port)
 	if err := s.Serve(lis); err != nil {
 		log.Fatalf("[%s] failed to serve: %v", _appName_, err)

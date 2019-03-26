@@ -1,10 +1,14 @@
 FROM alpine:3.9
-COPY /bin/rpc-nginx /bin/rpc-nginx
-#RUN apk add --no-cache \
-#		ca-certificates
-#RUN apk del .build-deps
 
-ENV GRPC_PORT :5000
+ARG VERSION
+ARG COMPONENT
+
+COPY /bin/rpc-* /bin/grpc
+
+RUN echo ${VERSION}
+RUN echo ${COMPONENT}
+ENV GRPC_PORT :7080
 ENV VIRTUAL_PROTO grpc
-EXPOSE 5000
-CMD ["rpc-nginx"]
+ENV VIRTUAL_HOST ${COMPONENT}-${VERSION}.grpc.apiatm.com
+EXPOSE 7080
+CMD ["grpc"]

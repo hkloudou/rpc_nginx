@@ -7,7 +7,7 @@ import (
 	"log"
 	"time"
 
-	pt "github.com/hkloudou/rpc_nginx/proto"
+	nginx "github.com/hkloudou/rpc_nginx/nginx"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 )
@@ -16,6 +16,7 @@ var (
 	grpcURL  string
 	certPath string
 	keyPath  string
+	caPath   string
 	name     string
 	apiKey   string
 )
@@ -26,6 +27,7 @@ func init() {
 	flag.StringVar(&grpcURL, "url", "localhost:80", "grpc URL")
 	flag.StringVar(&certPath, "cert", "", "certPath")
 	flag.StringVar(&keyPath, "key", "", "keyPath")
+	flag.StringVar(&caPath, "ca", "", "caPath")
 	flag.StringVar(&name, "name", "test", "Name")
 	flag.StringVar(&apiKey, "apikey", "grpcnginx", "apiKey")
 	flag.Parse()
@@ -38,12 +40,12 @@ func init() {
 }
 
 func main() {
-	c := pt.NewGreeterClient(conn)
+	c := nginx.NewGreeterClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	items := &pt.MultSSLSetRequest{}
+	items := &nginx.MultSSLSetRequest{}
 	items.Apikey = apiKey
-	items.Item = make([]*pt.SSLSetRequest, 0)
+	items.Item = make([]*nginx.SSLSetRequest, 0)
 	log.Println("read:", certPath)
 	log.Println("read:", keyPath)
 	if cert, err := ioutil.ReadFile(certPath); err != nil {
@@ -51,12 +53,20 @@ func main() {
 	} else if key, err := ioutil.ReadFile(keyPath); err != nil {
 		log.Fatal(err)
 	} else {
-		items.Item = append(items.Item, &pt.SSLSetRequest{
+		var ca []byte
+		var err error
+		if len(caPath) > 0 {
+			if ca, err = ioutil.ReadFile(caPath); err != nil {
+				log.Fatal(err)
+			}
+		}
+		items.Item = append(items.Item, &nginx.SSLSetRequest{
 			Directory: "",
 			CertName:  name,
 			KeyName:   name,
 			Cert:      cert,
 			Key:       key,
+			Ca:        ca,
 		})
 	}
 
