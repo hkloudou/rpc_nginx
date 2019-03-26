@@ -51,12 +51,9 @@ deploy-docker:
 	@docker push $(IMAGEWITHOUTTAG)
 	@docker push $(IMAGE)
 debug:
-	@make down
-	@make git
 	@make build-bin
 	@make build-debug-docker
 	@make dist-clean
-	@make up
 up:
 	@make down
 	docker-compose up -d
