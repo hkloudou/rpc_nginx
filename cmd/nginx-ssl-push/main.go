@@ -34,7 +34,7 @@ func init() {
 	flag.Parse()
 	var err error
 	//conn, err = grpc.Dial(grpcURL, grpc.WithInsecure())
-	conn = gtls.InitSSLGrpcWithEnv("rpc-nginx-v1.0.19.grpc.apiatm.com", "NGINX_DNS_NAME", "nginx")
+	conn = gtls.InitSSLGrpcWithEnv(nginx.GRPCServerURL, "NGINX_DNS_NAME", "nginx")
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}

@@ -68,7 +68,6 @@ down:
 t:
 	echo  $(subst .,-,$(VERSION))
 ssl:
-	nginx-ssl-push -cert "${HOME}/.acme.sh/apiatm.com/fullchain.cer" -key "${HOME}/.acme.sh/apiatm.com/apiatm.com.key" -name "apiatm.com" -url "rpc-nginx-v1.0.19.grpc.apiatm.com:7080"
-	nginx-ssl-push -cert "${HOME}/.acme.sh/youziku.com/fullchain.cer" -key "${HOME}/.acme.sh/youziku.com/youziku.com.key" -name "youziku.com" -url "rpc-nginx-v1.0.19.grpc.apiatm.com:7080"
+	nginx-ssl-push -cert "${HOME}/.acme.sh/apiatm.com/fullchain.cer" -key "${HOME}/.acme.sh/apiatm.com/apiatm.com.key" -name "apiatm.com" -url "localhost:9000"
 install:
 	cd cmd/nginx-ssl-push && go install
