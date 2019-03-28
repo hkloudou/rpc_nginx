@@ -10,10 +10,10 @@ COMPILE_TIME = $(shell date +%s)
 IMAGE_PREFIX=hkloudou
 COMPONENT=rpc-nginx
 WEBPROTO=nginx
-
 IMAGE = $(IMAGE_PREFIX)/$(COMPONENT):$(VERSION)
 IMAGEWITHOUTTAG = $(IMAGE_PREFIX)/$(COMPONENT):latest
 LDFLAGS = -X main._version_=$(VERSION) -X main._branch_=$(GIT_BRANCH) -X main._commitId_=$(GIT_LAST_COMMIT) -X main._buildTime_=$(COMPILE_TIME) -X main._appName_=$(COMPONENT) -s -w
+    
 default: init
 init:
 	@git config --local user.name hkloudou
@@ -30,7 +30,7 @@ build-bin: dist-clean
 build-debug-docker:
 	cd docker && docker build --rm --build-arg VERSION=debug --build-arg COMPONENT=$(COMPONENT) -t $(IMAGEWITHOUTTAG) .
 build-docker:
-	cd docker && docker build --rm --build-arg VERSION=$(VERSION) --build-arg COMPONENT=$(COMPONENT) -t $(IMAGEWITHOUTTAG) .
+	cd docker && docker build --rm --build-arg VERSION=$(VERSIONNILDOT) --build-arg COMPONENT=$(COMPONENT) -t $(IMAGEWITHOUTTAG) .
 deploy:
 	-git autotag -commit 'auto commit' -t -i
 	@make build-bin
@@ -39,7 +39,6 @@ deploy:
 	@make deploy-docker
 	@make fixversion
 fixversion:
-	@echo "fixversion"
 	echo "package $(WEBPROTO)">"$(WEBPROTO)/version.go"
 	echo "" >> "$(WEBPROTO)/version.go"
 	echo "//Version git tag version" >> "$(WEBPROTO)/version.go"
@@ -48,14 +47,16 @@ fixversion:
 	echo "var GRPCServerURL = \"${COMPONENT}-$(VERSIONNILDOT).grpc.apiatm.com\"" >>"$(WEBPROTO)/version.go"
 	git autotag -commit 'auto commit' -t -f -p
 deploy-docker:
-	@echo "deploy-docker $(IMAGEWITHOUTTAG) => $(IMAGE)"
 	@docker tag $(IMAGEWITHOUTTAG) $(IMAGE)
 	@docker push $(IMAGEWITHOUTTAG)
 	@docker push $(IMAGE)
 debug:
+	@make down
+	@make git
 	@make build-bin
 	@make build-debug-docker
 	@make dist-clean
+	@make up
 up:
 	@make down
 	docker-compose up -d
@@ -65,7 +66,9 @@ u:
 down:
 	docker-compose down -v --remove-orphans
 t:
-	nginx-ssl-push -cert "${HOME}/.acme.sh/apiatm.com/fullchain.cer" -key "${HOME}/.acme.sh/apiatm.com/apiatm.com.key" -name "apiatm.com" -url "localhost:9000"
-	nginx-ssl-push -cert "${HOME}/.acme.sh/youziku.com/fullchain.cer" -key "${HOME}/.acme.sh/youziku.com/youziku.com.key" -name "youziku.com" -url "localhost:9000"
+	echo  $(subst .,-,$(VERSION))
+t:
+	nginx-ssl-push -cert "${HOME}/.acme.sh/apiatm.com/fullchain.cer" -key "${HOME}/.acme.sh/apiatm.com/apiatm.com.key" -name "apiatm.com" -url "rpc-nginx-v1.0.19.grpc.apiatm.com:7080"
+	nginx-ssl-push -cert "${HOME}/.acme.sh/youziku.com/fullchain.cer" -key "${HOME}/.acme.sh/youziku.com/youziku.com.key" -name "youziku.com" -url "rpc-nginx-v1.0.19.grpc.apiatm.com:7080"
 install:
 	cd cmd/nginx-ssl-push && go install

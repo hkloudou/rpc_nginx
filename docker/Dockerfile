@@ -1,5 +1,4 @@
 FROM alpine:3.9
-
 ARG VERSION
 ARG COMPONENT
 

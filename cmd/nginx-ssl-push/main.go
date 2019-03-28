@@ -8,6 +8,7 @@ import (
 	"time"
 
 	nginx "github.com/hkloudou/rpc_nginx/nginx"
+	"gitlab.me/font/gtls"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/status"
 )
@@ -32,7 +33,8 @@ func init() {
 	flag.StringVar(&apiKey, "apikey", "grpcnginx", "apiKey")
 	flag.Parse()
 	var err error
-	conn, err = grpc.Dial(grpcURL, grpc.WithInsecure())
+	//conn, err = grpc.Dial(grpcURL, grpc.WithInsecure())
+	conn = gtls.InitSSLGrpcWithEnv("rpc-nginx-v1.0.19.grpc.apiatm.com", "NGINX_DNS_NAME", "nginx")
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)
 	}
