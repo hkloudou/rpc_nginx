@@ -25,23 +25,30 @@ var (
 var conn *grpc.ClientConn
 
 func init() {
-	flag.StringVar(&grpcURL, "url", "localhost:80", "grpc URL")
+	flag.StringVar(&grpcURL, "url", "", "grpc URL")
 	flag.StringVar(&certPath, "cert", "", "certPath")
 	flag.StringVar(&keyPath, "key", "", "keyPath")
 	flag.StringVar(&caPath, "ca", "", "caPath")
 	flag.StringVar(&name, "name", "test", "Name")
 	flag.StringVar(&apiKey, "apikey", "grpcnginx", "apiKey")
 	flag.Parse()
-	var err error
-	//conn, err = grpc.Dial(grpcURL, grpc.WithInsecure())
-	conn = gtls.InitSSLGrpcWithEnv(nginx.GRPCServerURL, "NGINX_DNS_NAME", "nginx")
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
-	log.Println("suc connect")
 }
 
 func main() {
+	if grpcURL != "" {
+		log.Println("new conn:", grpcURL)
+		var err error
+		conn, err = grpc.Dial(grpcURL)
+		if err != nil {
+			log.Fatalf("notls did not connect: %v", err)
+			time.Sleep(5 * time.Second)
+			panic("e")
+		}
+	} else {
+		conn = gtls.InitSSLGrpcWithEnv(nginx.GRPCServerURL, "NGINX_DNS_NAME", "nginx")
+		log.Println("new tls conn:", grpcURL)
+	}
+
 	c := nginx.NewGreeterClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

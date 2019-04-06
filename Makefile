@@ -70,4 +70,5 @@ t:
 ssl:
 	nginx-ssl-push -cert "${HOME}/.acme.sh/apiatm.com/fullchain.cer" -key "${HOME}/.acme.sh/apiatm.com/apiatm.com.key" -name "apiatm.com" -url "localhost:9000"
 install:
+	rm -rf $(GOPATH)/bin/nginx-ssl-push
 	cd cmd/nginx-ssl-push && go install
